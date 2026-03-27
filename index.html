@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansh Nagre | Cybersecurity Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0B0F19;
+  --bg2: #0e1420;
+  --bg3: #111827;
+  --green: #00FF9F;
+  --blue: #00C3FF;
+  --red: #FF3B3B;
+  --dim-green: rgba(0,255,159,0.12);
+  --dim-blue: rgba(0,195,255,0.12);
+  --text: #c8d6e5;
+  --text-dim: #4a5568;
+  --border: rgba(0,255,159,0.15);
+  --mono: 'Share Tech Mono', monospace;
+  --head: 'Orbitron', sans-serif;
+  --body: 'Rajdhani', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ─── CANVAS BG ─────────────────────────────── */
+#matrix-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+/* ─── NAV ────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.1rem 6vw;
+  background: rgba(11,15,25,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: var(--head);
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+.nav-logo span { color: var(--blue); }
+
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  font-family: var(--mono);
+  font-size: .78rem;
+  color: var(--text-dim);
+  text-decoration: none;
+  letter-spacing: .08em;
+  transition: color .25s;
+  position: relative;
+}
+.nav-links a::before {
+  content: '> ';
+  color: var(--green);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.nav-links a:hover { color: var(--green); }
+.nav-links a:hover::before { opacity: 1; }
+
+/* ─── HERO ───────────────────────────────────── */
+#hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 10vw;
+  overflow: hidden;
+}
+
+.hero-pre {
+  font-family: var(--mono);
+  font-size: .8rem;
+  color: var(--green);
+  letter-spacing: .2em;
+  margin-bottom: 1rem;
+  animation: fadeDown .6s ease both;
+}
+
+.hero-name {
+  font-family: var(--head);
+  font-size: clamp(2.8rem, 7vw, 6rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: .04em;
+  margin-bottom: 1.2rem;
+  animation: fadeDown .7s .1s ease both;
+  background: linear-gradient(135deg, #fff 30%, var(--green) 70%, var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-tagline {
+  font-family: var(--mono);
+  font-size: clamp(.9rem, 1.8vw, 1.15rem);
+  color: var(--blue);
+  min-height: 1.8em;
+  margin-bottom: 2.5rem;
+  animation: fadeDown .7s .2s ease both;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: var(--green);
+  vertical-align: text-bottom;
+  animation: blink .8s step-end infinite;
+}
+
+.btn-primary {
+  font-family: var(--head);
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--green);
+  border: none;
+  padding: .85rem 2.2rem;
+  cursor: pointer;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  position: relative;
+  transition: box-shadow .3s, transform .2s;
+  text-decoration: none;
+  display: inline-block;
+  animation: fadeDown .7s .35s ease both;
+}
+.btn-primary:hover {
+  box-shadow: 0 0 28px rgba(0,255,159,.6), 0 0 60px rgba(0,255,159,.2);
+  transform: translateY(-2px);
+}
+
+.hero-grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,255,159,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,159,.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+}
+
+.hero-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,195,255,.08) 0%, transparent 70%);
+  right: 5%; top: 10%;
+  pointer-events: none;
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-family: var(--mono);
+  font-size: .72rem;
+  color: var(--green);
+  border: 1px solid rgba(0,255,159,.3);
+  padding: .3rem .8rem;
+  margin-bottom: 1.4rem;
+  letter-spacing: .1em;
+  animation: fadeDown .6s .05s ease both;
+}
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: blink 1.4s ease-in-out infinite;
+}
+
+/* ─── SECTIONS ───────────────────────────────── */
+section { position: relative; z-index: 1; padding: 6rem 10vw; }
+
+.section-label {
+  font-family: var(--mono);
+  font-size: .75rem;
+  color: var(--green);
+  letter-spacing: .25em;
+  margin-bottom: .5rem;
+}
+
+.section-title {
+  font-family: var(--head);
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: .06em;
+  margin-bottom: 3rem;
+  position: relative;
+  display: inline-block;
+}
+.section-title::after {
+  content: '';
+  display: block;
+  height: 2px;
+  width: 60%;
+  margin-top: .5rem;
+  background: linear-gradient(90deg, var(--green), transparent);
+}
+
+/* ─── ABOUT ──────────────────────────────────── */
+.about-card {
+  max-width: 760px;
+  background: rgba(255,255,255,.02);
+  border: 1px solid var(--border);
+  padding: 2.5rem 3rem;
+  position: relative;
+  transition: box-shadow .4s;
+}
+.about-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, rgba(0,255,159,.15), transparent 50%, rgba(0,195,255,.1));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity .4s;
+}
+.about-card:hover { box-shadow: 0 0 40px rgba(0,255,159,.08); }
+.about-card:hover::before { opacity: 1; }
+
+.about-card p {
+  font-size: 1.1rem;
+  color: #a0b2c6;
+  line-height: 1.9;
+}
+
+.about-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: .7rem;
+  color: var(--blue);
+  border: 1px solid rgba(0,195,255,.25);
+  padding: .15rem .6rem;
+  margin: .8rem .3rem 0 0;
+}
+
+/* ─── PROJECTS ───────────────────────────────── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.project-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .3s, box-shadow .3s;
+}
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--green);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform .35s;
+}
+.project-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,255,159,.1); }
+.project-card:hover::before { transform: scaleY(1); }
+
+.project-card.featured { border-color: rgba(0,255,159,.35); }
+.project-card.featured::before { transform: scaleY(1); }
+
+.project-card.dimmed { opacity: .55; }
+.project-card.dimmed:hover { opacity: .8; }
+
+.project-badge {
+  font-family: var(--mono);
+  font-size: .65rem;
+  letter-spacing: .15em;
+  padding: .2rem .6rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+.badge-featured { background: rgba(0,255,159,.1); color: var(--green); border: 1px solid rgba(0,255,159,.3); }
+.badge-soon { background: rgba(255,59,59,.08); color: var(--red); border: 1px solid rgba(255,59,59,.25); }
+
+.project-title {
+  font-family: var(--head);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  margin-bottom: .8rem;
+  color: #e2e8f0;
+}
+
+.project-desc { font-size: .95rem; color: #6b7fa3; line-height: 1.7; margin-bottom: 1.2rem; }
+
+.tag-list { display: flex; flex-wrap: wrap; gap: .5rem; }
+.tag {
+  font-family: var(--mono);
+  font-size: .65rem;
+  color: var(--blue);
+  background: rgba(0,195,255,.06);
+  border: 1px solid rgba(0,195,255,.2);
+  padding: .2rem .6rem;
+}
+
+/* ─── DEMO ───────────────────────────────────── */
+#demo { background: var(--bg2); }
+
+.terminal-window {
+  max-width: 680px;
+  background: #06090f;
+  border: 1px solid rgba(0,255,159,.25);
+  border-radius: 0;
+  box-shadow: 0 0 60px rgba(0,255,159,.07);
+}
+
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .7rem 1.2rem;
+  background: #0d1220;
+  border-bottom: 1px solid rgba(0,255,159,.1);
+}
+.t-dot { width: 10px; height: 10px; border-radius: 50%; }
+.t-red { background: var(--red); }
+.t-yellow { background: #f0c050; }
+.t-green-dot { background: var(--green); }
+.terminal-title {
+  font-family: var(--mono);
+  font-size: .7rem;
+  color: var(--text-dim);
+  margin-left: .5rem;
+  letter-spacing: .1em;
+}
+
+.terminal-body { padding: 1.5rem; }
+
+.t-line { font-family: var(--mono); font-size: .85rem; margin-bottom: .4rem; }
+.t-prompt { color: var(--green); }
+.t-comment { color: #4a5568; }
+
+.demo-label {
+  font-family: var(--mono);
+  font-size: .65rem;
+  color: var(--red);
+  letter-spacing: .15em;
+  text-align: center;
+  margin-top: 1rem;
+  border: 1px dashed rgba(255,59,59,.3);
+  padding: .4rem;
+}
+
+.sqli-form {
+  margin: 1.2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+}
+.sqli-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  background: rgba(0,255,159,.03);
+  border: 1px solid rgba(0,255,159,.15);
+  padding: .6rem 1rem;
+}
+.sqli-label { font-family: var(--mono); font-size: .75rem; color: var(--text-dim); white-space: nowrap; }
+.sqli-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--green);
+  font-family: var(--mono);
+  font-size: .85rem;
+}
+.sqli-btn {
+  font-family: var(--head);
+  font-size: .65rem;
+  letter-spacing: .15em;
+  color: var(--bg);
+  background: var(--blue);
+  border: none;
+  padding: .55rem 1.4rem;
+  cursor: pointer;
+  transition: box-shadow .25s;
+}
+.sqli-btn:hover { box-shadow: 0 0 20px rgba(0,195,255,.5); }
+
+.sqli-output {
+  font-family: var(--mono);
+  font-size: .82rem;
+  padding: .7rem 1rem;
+  border: 1px solid rgba(0,255,159,.2);
+  background: rgba(0,255,159,.04);
+  color: var(--green);
+  min-height: 2.2rem;
+  transition: all .3s;
+}
+.sqli-output.error { color: var(--red); border-color: rgba(255,59,59,.25); background: rgba(255,59,59,.04); }
+
+/* ─── SKILLS ─────────────────────────────────── */
+.skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+
+.skill-item { margin-bottom: .2rem; }
+.skill-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: .5rem;
+}
+.skill-name { font-family: var(--mono); font-size: .82rem; color: #a0b2c6; letter-spacing: .08em; }
+.skill-pct { font-family: var(--mono); font-size: .75rem; color: var(--green); }
+.skill-bar-bg {
+  height: 4px;
+  background: rgba(255,255,255,.05);
+  position: relative;
+  overflow: hidden;
+}
+.skill-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--blue));
+  box-shadow: 0 0 8px var(--green);
+  width: 0;
+  transition: width 1.2s cubic-bezier(.4,0,.2,1);
+}
+
+/* ─── PLATFORMS ──────────────────────────────── */
+.platforms-grid { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+
+.platform-card {
+  flex: 1; min-width: 200px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 1.8rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  transition: box-shadow .3s, transform .3s;
+}
+.platform-card:hover {
+  box-shadow: 0 0 30px rgba(0,255,159,.1);
+  transform: translateY(-3px);
+}
+.platform-icon {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.p-thm { background: rgba(0,255,159,.1); border: 1px solid rgba(0,255,159,.25); }
+.p-htb { background: rgba(0,195,255,.1); border: 1px solid rgba(0,195,255,.25); }
+.p-ctf { background: rgba(255,59,59,.1); border: 1px solid rgba(255,59,59,.25); }
+
+.platform-info h4 { font-family: var(--head); font-size: .8rem; letter-spacing: .08em; margin-bottom: .2rem; }
+.platform-info p { font-size: .82rem; color: var(--text-dim); }
+
+/* ─── CONTACT ────────────────────────────────── */
+#contact { text-align: center; }
+
+.contact-card {
+  max-width: 600px;
+  margin: 0 auto;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 4rem 3rem;
+  position: relative;
+}
+.contact-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 80px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--green), transparent);
+}
+
+.contact-card p { color: #6b7fa3; font-size: 1.05rem; margin-bottom: 2rem; }
+
+.contact-email {
+  font-family: var(--mono);
+  font-size: .85rem;
+  color: var(--blue);
+  margin-bottom: 2rem;
+  display: block;
+}
+
+.btn-outline {
+  font-family: var(--head);
+  font-size: .72rem;
+  letter-spacing: .2em;
+  color: var(--green);
+  border: 1px solid var(--green);
+  background: transparent;
+  padding: .8rem 2rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  transition: background .25s, box-shadow .25s;
+}
+.btn-outline:hover {
+  background: var(--dim-green);
+  box-shadow: 0 0 24px rgba(0,255,159,.3);
+}
+
+/* ─── FOOTER ─────────────────────────────────── */
+footer {
+  position: relative; z-index: 1;
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: .7rem;
+  color: var(--text-dim);
+  letter-spacing: .1em;
+}
+
+footer span { color: var(--green); }
+
+/* ─── DIVIDER ────────────────────────────────── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 0 10vw;
+  position: relative; z-index: 1;
+}
+
+/* ─── KEYFRAMES ──────────────────────────────── */
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:none} }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+@keyframes scanline {
+  0%{transform:translateY(-100%)}
+  100%{transform:translateY(100vh)}
+}
+
+/* scanline effect */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(transparent, rgba(0,255,159,.06), transparent);
+  animation: scanline 6s linear infinite;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ─── SCROLL ANIMATIONS ──────────────────────── */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ─── RESPONSIVE ─────────────────────────────── */
+@media (max-width: 700px) {
+  section { padding: 4rem 6vw; }
+  nav { padding: .9rem 5vw; }
+  .nav-links { gap: 1.2rem; }
+  .nav-links a { font-size: .7rem; }
+  #hero { padding: 0 6vw; }
+  .about-card { padding: 1.8rem; }
+  .contact-card { padding: 2.5rem 1.5rem; }
+  .terminal-body { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">AN<span>:</span>SEC</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid-overlay"></div>
+  <div class="hero-glow"></div>
+
+  <div class="status-badge"><span class="status-dot"></span>AVAILABLE FOR OPPORTUNITIES</div>
+  <h1 class="hero-name">ANSH<br>NAGRE</h1>
+  <div class="hero-tagline" id="tagline"><span class="cursor"></span></div>
+  <a href="#projects" class="btn-primary">View My Work</a>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<section id="about">
+  <p class="section-label reveal">// ABOUT_ME.txt</p>
+  <h2 class="section-title reveal">Who I Am</h2>
+  <div class="about-card reveal">
+    <p>I am a cybersecurity enthusiast focused on identifying vulnerabilities, analyzing malware, and building secure systems. Passionate about protecting digital infrastructure and continuously learning modern attack and defense techniques.</p>
+    <div style="margin-top:1.5rem">
+      <span class="about-tag">Malware Analysis</span>
+      <span class="about-tag">Ethical Hacking</span>
+      <span class="about-tag">Network Security</span>
+      <span class="about-tag">Machine Learning</span>
+      <span class="about-tag">CTF Player</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <p class="section-label reveal">// PROJECTS.dir</p>
+  <h2 class="section-title reveal">My Work</h2>
+  <div class="projects-grid">
+
+    <div class="project-card featured reveal">
+      <span class="project-badge badge-featured">FEATURED</span>
+      <h3 class="project-title">AI-Based Malware Detection System</h3>
+      <p class="project-desc">A machine learning-based system that detects malicious software using pattern analysis and behavioral classification techniques — trained on large-scale threat datasets.</p>
+      <div class="tag-list">
+        <span class="tag">Python</span>
+        <span class="tag">Machine Learning</span>
+        <span class="tag">Cybersecurity</span>
+        <span class="tag">Scikit-learn</span>
+      </div>
+    </div>
+
+    <div class="project-card dimmed reveal">
+      <span class="project-badge badge-soon">IN PROGRESS</span>
+      <h3 class="project-title">Advanced Vulnerability Scanner</h3>
+      <p class="project-desc">Automated network and web vulnerability scanner with CVE mapping and severity scoring. Modular architecture for extensible plugin support.</p>
+      <div class="tag-list">
+        <span class="tag">Python</span>
+        <span class="tag">Nmap</span>
+        <span class="tag">CVE</span>
+      </div>
+    </div>
+
+    <div class="project-card dimmed reveal">
+      <span class="project-badge badge-soon">COMING SOON</span>
+      <h3 class="project-title">Web Exploit Playground</h3>
+      <p class="project-desc">An isolated, containerized environment for practicing OWASP Top 10 vulnerabilities, XSS, SQLI, and CSRF in a legal, controlled lab.</p>
+      <div class="tag-list">
+        <span class="tag">Docker</span>
+        <span class="tag">OWASP</span>
+        <span class="tag">Node.js</span>
+      </div>
+    </div>
+
+    <div class="project-card dimmed reveal">
+      <span class="project-badge badge-soon">COMING SOON</span>
+      <h3 class="project-title">Custom Security Tools</h3>
+      <p class="project-desc">A suite of personal security tools including packet sniffers, log analyzers, and automated threat intelligence report generators.</p>
+      <div class="tag-list">
+        <span class="tag">Scapy</span>
+        <span class="tag">OSINT</span>
+        <span class="tag">Python</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- LIVE DEMO -->
+<section id="demo">
+  <p class="section-label reveal">// DEMO.exe</p>
+  <h2 class="section-title reveal">SQL Injection Simulator</h2>
+
+  <div class="terminal-window reveal">
+    <div class="terminal-bar">
+      <div class="t-dot t-red"></div>
+      <div class="t-dot t-yellow"></div>
+      <div class="t-dot t-green-dot"></div>
+      <span class="terminal-title">attack_simulation.sh — Educational Demo Only</span>
+    </div>
+    <div class="terminal-body">
+      <p class="t-line"><span class="t-prompt">root@kali:~$ </span>./sqli_demo.py --target login_form</p>
+      <p class="t-line t-comment"># Enter credentials below. Try SQL injection payload.</p>
+      <p class="t-line t-comment"># Payload hint: <span style="color:#FF3B3B">' OR 1=1 --</span></p>
+
+      <div class="sqli-form">
+        <div class="sqli-input-wrap">
+          <span class="sqli-label">USERNAME:</span>
+          <input class="sqli-input" id="sqli-user" type="text" value="admin" autocomplete="off">
+        </div>
+        <div class="sqli-input-wrap">
+          <span class="sqli-label">PASSWORD:</span>
+          <input class="sqli-input" id="sqli-pass" type="text" placeholder="Enter password or payload..." autocomplete="off">
+        </div>
+        <button class="sqli-btn" onclick="runSQLI()">EXECUTE ▶</button>
+      </div>
+
+      <div class="sqli-output" id="sqli-output">Awaiting input...</div>
+    </div>
+  </div>
+  <div class="demo-label reveal">⚠ EDUCATIONAL PURPOSES ONLY — SIMULATED ENVIRONMENT — NOT A REAL VULNERABILITY</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <p class="section-label reveal">// SKILLS.json</p>
+  <h2 class="section-title reveal">Technical Proficiency</h2>
+  <div class="skills-grid">
+    <div>
+      <div class="skill-item reveal" data-pct="88">
+        <div class="skill-header"><span class="skill-name">Network Security</span><span class="skill-pct">88%</span></div>
+        <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="88"></div></div>
+      </div>
+      <div style="margin-top:1.5rem"></div>
+      <div class="skill-item reveal" data-pct="82">
+        <div class="skill-header"><span class="skill-name">Malware Analysis</span><span class="skill-pct">82%</span></div>
+        <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="82"></div></div>
+      </div>
+      <div style="margin-top:1.5rem"></div>
+      <div class="skill-item reveal" data-pct="90">
+        <div class="skill-header"><span class="skill-name">Python</span><span class="skill-pct">90%</span></div>
+        <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="90"></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="skill-item reveal" data-pct="78">
+        <div class="skill-header"><span class="skill-name">Ethical Hacking</span><span class="skill-pct">78%</span></div>
+        <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="78"></div></div>
+      </div>
+      <div style="margin-top:1.5rem"></div>
+      <div class="skill-item reveal" data-pct="75">
+        <div class="skill-header"><span class="skill-name">Web Security</span><span class="skill-pct">75%</span></div>
+        <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="75"></div></div>
+      </div>
+      <div style="margin-top:1.5rem"></div>
+      <div class="skill-item reveal" data-pct="70">
+        <div class="skill-header"><span class="skill-name">Machine Learning</span><span class="skill-pct">70%</span></div>
+        <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="70"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PLATFORMS -->
+<section id="platforms">
+  <p class="section-label reveal">// LEARNING.log</p>
+  <h2 class="section-title reveal">Platforms & Learning</h2>
+  <div class="platforms-grid">
+    <div class="platform-card reveal">
+      <div class="platform-icon p-thm">🧠</div>
+      <div class="platform-info">
+        <h4 style="color:var(--green)">TryHackMe</h4>
+        <p>Guided learning paths & rooms in offensive/defensive security.</p>
+      </div>
+    </div>
+    <div class="platform-card reveal">
+      <div class="platform-icon p-htb">⚡</div>
+      <div class="platform-info">
+        <h4 style="color:var(--blue)">HackTheBox</h4>
+        <p>Real-world machine exploitation and penetration testing labs.</p>
+      </div>
+    </div>
+    <div class="platform-card reveal">
+      <div class="platform-icon p-ctf">🚩</div>
+      <div class="platform-info">
+        <h4 style="color:var(--red)">CTF Competitions</h4>
+        <p>Capture the Flag challenges — cryptography, forensics, reverse engineering.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-card reveal">
+    <p class="section-label" style="justify-content:center;display:flex">// CONTACT.sh</p>
+    <h2 class="section-title" style="display:block;text-align:center">Let's Connect</h2>
+    <p>Interested in cybersecurity collaboration or opportunities? Let's connect.</p>
+    <span class="contact-email">anshnagre@email.com</span>
+    <a href="mailto:anshnagre@email.com" class="btn-outline">Contact Me</a>
+  </div>
+</section>
+
+<footer>
+  <span>ANSH NAGRE</span> · Cybersecurity Portfolio · 2025 · All systems operational
+</footer>
+
+<script>
+/* ── MATRIX RAIN ─────────────────────────────── */
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+let cols, drops;
+
+function initMatrix() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  cols = Math.floor(canvas.width / 18);
+  drops = Array(cols).fill(1);
+}
+
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(11,15,25,0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00FF9F';
+  ctx.font = '13px Share Tech Mono, monospace';
+  const chars = '01アイウエカサタナセ{}[]<>SECURE';
+  drops.forEach((y, i) => {
+    const char = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(char, i * 18, y * 18);
+    if (y * 18 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  });
+}
+
+initMatrix();
+window.addEventListener('resize', initMatrix);
+setInterval(drawMatrix, 55);
+
+/* ── TYPING ANIMATION ────────────────────────── */
+const phrases = [
+  'Cybersecurity Enthusiast',
+  'Malware Analysis',
+  'Ethical Hacking',
+  'Threat Intelligence',
+  'Secure by Design'
+];
+let pi = 0, ci = 0, deleting = false;
+const tagEl = document.getElementById('tagline');
+
+function type() {
+  const current = phrases[pi];
+  if (!deleting) {
+    tagEl.innerHTML = current.slice(0, ci + 1) + '<span class="cursor"></span>';
+    ci++;
+    if (ci === current.length) { deleting = true; setTimeout(type, 1800); return; }
+  } else {
+    tagEl.innerHTML = current.slice(0, ci - 1) + '<span class="cursor"></span>';
+    ci--;
+    if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; }
+  }
+  setTimeout(type, deleting ? 55 : 90);
+}
+type();
+
+/* ── SCROLL REVEAL ───────────────────────────── */
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      // animate skill bars
+      const bar = e.target.querySelector('.skill-bar-fill');
+      if (bar) bar.style.width = bar.dataset.width + '%';
+    }
+  });
+}, { threshold: 0.15 });
+revealEls.forEach(el => observer.observe(el));
+
+/* ── SQL INJECTION DEMO ──────────────────────── */
+function runSQLI() {
+  const user = document.getElementById('sqli-user').value;
+  const pass = document.getElementById('sqli-pass').value;
+  const out = document.getElementById('sqli-output');
+
+  const injectionPatterns = ["' or 1=1", "' or '1'='1", "1=1", "or 1=1", "--", "' --", "admin'--"];
+  const isInjected = injectionPatterns.some(p => pass.toLowerCase().includes(p) || user.toLowerCase().includes(p));
+
+  if (isInjected) {
+    out.className = 'sqli-output';
+    out.textContent = '';
+    const msg = '✓ ACCESS GRANTED (Simulated) — SQL Injection Detected! Query bypassed authentication.';
+    let i = 0;
+    const interval = setInterval(() => {
+      out.textContent += msg[i++];
+      if (i >= msg.length) clearInterval(interval);
+    }, 30);
+  } else if (!pass) {
+    out.className = 'sqli-output error';
+    out.textContent = '✗ ERROR: Empty password field.';
+  } else {
+    out.className = 'sqli-output error';
+    out.textContent = '✗ ACCESS DENIED — Invalid credentials. Try: \' OR 1=1 --';
+  }
+}
+
+document.getElementById('sqli-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runSQLI();
+});
+</script>
+</body>
+</html>
